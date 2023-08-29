@@ -1,0 +1,9 @@
+vpc_name = "demo_vpc"
+subnet_name = "demo_subnet"
+subnet_cidrs = [ "10.10.10.0/24" ]
+pub_subnet_name = "pub_subnet"
+pub_subnet_cidrs = [ "10.10.11.0/24" ]
+vm_name = "demo-vm"
+vm_name2 = "demo-vm2"
+vm_name3 = "demo-vm3"
+vm_name4 = "demo-vm4"

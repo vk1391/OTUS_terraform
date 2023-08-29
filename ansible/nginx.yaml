@@ -1,7 +1,6 @@
-- hosts:  demo-vm.OTUS.yc ansible_host
+- hosts: proxy
   become: yes
   tasks:
-
     - name: update
       apt: update_cache=yes   
    
@@ -11,6 +10,37 @@
       notify:
         - restart nginx
 
+    - name: Copy default nginx
+      copy:
+          src: ~/OTUS/nginx_balanced/default
+          dest: /etc/nginx/sites-available/
+          owner: ubuntu
+          group: ubuntu
+          mode: 0644
+    - name: enable forwarding
+      become: true
+      command: sudo sysctl -w net.ipv4.ip_forward=1
+
+    - name: get masquerade
+      become: true
+      command: sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
   handlers:
     - name: restart nginx
       service: name=nginx state=reloaded
+
+- hosts: db
+  become: yes
+  tasks:
+    - name: Update and upgrade apt packages
+      become: true
+      apt:
+        update_cache: yes
+        cache_valid_time: 86400 #One day]
+
+    - name: install mysql server
+      apt: name=mysql-server state=latest
+  
+  handlers:
+    - name: restart mysql
+      service: name=mysql-server state=reloaded
